@@ -1,4 +1,4 @@
-use serde_json::{json, Value};
+use serde_json::Value;
 
 pub fn exec() {
     println!("hello world!!")
@@ -13,6 +13,7 @@ pub fn render(text: &str, setting: Value) -> String {
     let result = match setting.as_object() {
         Some(setting_map) => {
             let mut tmp_text = text.to_string();
+            // TODO Parse and render, not replace
             for (key, value) in setting_map {
                 tmp_text = match value.as_str() {
                     Some(val) => replace_string(tmp_text, key, val),
@@ -48,5 +49,17 @@ mod tests {
     fn test_render_only_one_word() {
         let setting = json!({"name": "rtpl"});
         assert_eq!("hello rtpl!!".to_string(), render("hello {{name}}!!", setting));
+    }
+
+    #[test]
+    fn test_render_two_word() {
+        let setting = json!({
+            "name": "rtpl",
+            "greeting": "good morning"
+            });
+        assert_eq!(
+            "good morning rtpl!!".to_string(),
+            render("{{greeting}} {{name}}!!", setting)
+        );
     }
 }
