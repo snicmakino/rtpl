@@ -29,11 +29,11 @@ fn main() {
         .version(crate_version!())
         .author(crate_authors!())
         .about(crate_description!())
-        .arg(Arg::from_usage("-f --file <FILE> 'file path about template setting'"))
-        .arg(Arg::from_usage("-t --template [TEMPLATE] 'template file path'"))
-        .arg(Arg::from_usage("template [TEMPLATE] 'template file path'"));
+        .arg(Arg::from_usage("-s --setting <FILE> 'file path about template setting'"))
+        .arg(Arg::from_usage("-t --template [TEMPLATE] 'template file path'"));
     // TODO value option
     // TODO env mode option
+    // TODO set output file
 
     let matches = app.get_matches();
 
@@ -44,13 +44,14 @@ fn main() {
 }
 
 fn setting(matches: &ArgMatches) -> Result<Value, Box<dyn Error>> {
-    if let Some(file) = matches.value_of("file") {
+    if let Some(file) = matches.value_of("setting") {
         return setting::get_from_file(file);
     }
     return Err(Box::new(SettingNotFoundError));
 }
 
 fn template(matches: &ArgMatches) -> Result<String, Box<dyn Error>> {
+    // TODO Consider whether standard input is required
     return match matches.value_of("template") {
         Some(file) => input::read_from_file(file),
         None => input::read_from_stdin()
