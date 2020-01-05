@@ -1,9 +1,5 @@
 use serde_json::Value;
 
-pub fn exec() {
-    println!("hello world!!")
-}
-
 pub fn render(text: &str, setting: Value) -> String {
     let setting_map = setting.as_object();
     if setting_map.is_none() {
