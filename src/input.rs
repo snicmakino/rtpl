@@ -1,7 +1,5 @@
-use std::env;
 use std::error::Error;
 use std::fs;
-use std::io;
 use std::io::Read;
 
 pub fn read_from_stdin() -> Result<String, Box<dyn Error>> {
