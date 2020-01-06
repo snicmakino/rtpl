@@ -31,9 +31,9 @@ fn main() {
         .about(crate_description!())
         .arg(Arg::from_usage("-s --setting <FILE> 'file path about template setting'"))
         .arg(Arg::from_usage("-t --template [TEMPLATE] 'template file path'"));
-    // TODO value option
-    // TODO env mode option
-    // TODO set output file
+    // TODO value option -v --values
+    // TODO env mode option -e --env
+    // TODO set output file -o --output
 
     let matches = app.get_matches();
 
