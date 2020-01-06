@@ -5,9 +5,9 @@ use std::error::Error;
 use std::fmt;
 
 use clap::{App, Arg, ArgMatches};
+use handlebars::Handlebars;
 use serde_json::Value;
 
-mod core;
 mod input;
 mod setting;
 
@@ -40,7 +40,9 @@ fn main() {
     let setting = setting(&matches).unwrap();
     let template = template(&matches).unwrap();
 
-    print!("{}", core::render(&template, setting));
+    let handlebars = Handlebars::new();
+    let result = handlebars.render_template(&template, &setting).unwrap();
+    print!("{}", result);
 }
 
 fn setting(matches: &ArgMatches) -> Result<Value, Box<dyn Error>> {
