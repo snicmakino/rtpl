@@ -9,6 +9,7 @@ use handlebars::Handlebars;
 use serde_json::Value;
 
 mod input;
+mod output;
 mod setting;
 
 // TODO move error for specific module
@@ -29,11 +30,11 @@ fn main() {
         .version(crate_version!())
         .author(crate_authors!())
         .about(crate_description!())
-        .arg(Arg::from_usage("-s --setting <FILE> 'file path about template setting'"))
-        .arg(Arg::from_usage("-t --template [TEMPLATE] 'template file path'"));
+        .arg(Arg::from_usage("-s --setting <FILE> 'setting file'"))
+        .arg(Arg::from_usage("-t --template [TEMPLATE] 'template file'"))
+        .arg(Arg::from_usage("-o --output [OUTPUT] 'output file'"));
     // TODO value option -v --values
     // TODO env mode option -e --env
-    // TODO set output file -o --output
 
     let matches = app.get_matches();
 
@@ -42,7 +43,7 @@ fn main() {
 
     let handlebars = Handlebars::new();
     let result = handlebars.render_template(&template, &setting).unwrap();
-    print!("{}", result);
+    output(&matches, result);
 }
 
 fn setting(matches: &ArgMatches) -> Result<Value, Box<dyn Error>> {
@@ -57,5 +58,12 @@ fn template(matches: &ArgMatches) -> Result<String, Box<dyn Error>> {
     return match matches.value_of("template") {
         Some(file) => input::read_from_file(file),
         None => input::read_from_stdin()
+    };
+}
+
+fn output(matches: &ArgMatches, content: String) {
+    match matches.value_of("output") {
+        Some(file) => output::to_file(content, file),
+        None => output::to_stdout(content)
     };
 }
