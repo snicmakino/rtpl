@@ -1,12 +1,14 @@
 #[macro_use]
 extern crate clap;
 
+use std::collections::HashMap;
+use std::env;
 use std::error::Error;
 use std::fmt;
 
 use clap::{App, Arg, ArgMatches};
 use handlebars::Handlebars;
-use serde_json::{Map, Value};
+use serde_json::{json, Map, Value};
 
 mod input;
 mod output;
@@ -30,11 +32,12 @@ fn main() {
         .version(crate_version!())
         .author(crate_authors!())
         .about(crate_description!())
+        // TODO set option group
         .arg(Arg::from_usage("-s --setting [FILE] 'setting file'"))
         .arg(Arg::from_usage("-t --template [TEMPLATE] 'template file'"))
         .arg(Arg::from_usage("-o --output [OUTPUT] 'output file'"))
-        .arg(Arg::from_usage("-v --value... [VALUE] 'setting values'"));
-    // TODO env mode option -e --env
+        .arg(Arg::from_usage("-v --value... [VALUE] 'setting values'"))
+        .arg(Arg::from_usage("-e --env 'setting env mode'"));
 
     let matches = app.get_matches();
 
@@ -57,6 +60,10 @@ fn setting(matches: &ArgMatches) -> Result<Value, Box<dyn Error>> {
             map.insert(v[0].to_string(), v[1].into());
         }
         return Ok(map.into());
+    }
+    if matches.is_present("env") {
+        let vars: HashMap<String, String> = std::env::vars().collect();
+        return Ok(json!(vars));
     }
     return Err(Box::new(SettingNotFoundError));
 }
