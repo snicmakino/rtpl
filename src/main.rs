@@ -6,7 +6,7 @@ use std::fmt;
 
 use clap::{App, Arg, ArgMatches};
 use handlebars::Handlebars;
-use serde_json::Value;
+use serde_json::{Map, Value};
 
 mod input;
 mod output;
@@ -30,10 +30,10 @@ fn main() {
         .version(crate_version!())
         .author(crate_authors!())
         .about(crate_description!())
-        .arg(Arg::from_usage("-s --setting <FILE> 'setting file'"))
+        .arg(Arg::from_usage("-s --setting [FILE] 'setting file'"))
         .arg(Arg::from_usage("-t --template [TEMPLATE] 'template file'"))
-        .arg(Arg::from_usage("-o --output [OUTPUT] 'output file'"));
-    // TODO value option -v --values
+        .arg(Arg::from_usage("-o --output [OUTPUT] 'output file'"))
+        .arg(Arg::from_usage("-v --value... [VALUE] 'setting values'"));
     // TODO env mode option -e --env
 
     let matches = app.get_matches();
@@ -49,6 +49,14 @@ fn main() {
 fn setting(matches: &ArgMatches) -> Result<Value, Box<dyn Error>> {
     if let Some(file) = matches.value_of("setting") {
         return setting::get_from_file(file);
+    }
+    if let Some(values) = matches.values_of("value") {
+        let mut map = Map::new();
+        for value in values {
+            let v: Vec<&str> = value.splitn(2, "=").collect();
+            map.insert(v[0].to_string(), v[1].into());
+        }
+        return Ok(map.into());
     }
     return Err(Box::new(SettingNotFoundError));
 }
