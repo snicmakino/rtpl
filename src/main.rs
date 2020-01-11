@@ -6,7 +6,7 @@ use std::env;
 use std::error::Error;
 use std::fmt;
 
-use clap::{App, Arg, ArgMatches};
+use clap::{App, Arg, ArgGroup, ArgMatches};
 use handlebars::Handlebars;
 use serde_json::{json, Map, Value};
 
@@ -32,12 +32,14 @@ fn main() {
         .version(crate_version!())
         .author(crate_authors!())
         .about(crate_description!())
-        // TODO set option group
         .arg(Arg::from_usage("-s --setting [FILE] 'setting file'"))
         .arg(Arg::from_usage("-t --template [TEMPLATE] 'template file'"))
         .arg(Arg::from_usage("-o --output [OUTPUT] 'output file'"))
         .arg(Arg::from_usage("-v --value... [VALUE] 'setting values'"))
-        .arg(Arg::from_usage("-e --env 'setting env mode'"));
+        .arg(Arg::from_usage("-e --env 'setting env mode'"))
+        .group(ArgGroup::with_name("settings")
+            .args(&["setting", "value", "env"])
+            .required(true));
 
     let matches = app.get_matches();
 
