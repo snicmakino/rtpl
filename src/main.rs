@@ -33,13 +33,14 @@ fn main() {
         .author(crate_authors!())
         .about(crate_description!())
         .arg(Arg::from_usage("-s --setting [FILE] 'setting file'"))
-        .arg(Arg::from_usage("-t --template [TEMPLATE] 'template file'"))
-        .arg(Arg::from_usage("-o --output [OUTPUT] 'output file'"))
         .arg(Arg::from_usage("-v --value... [VALUE] 'setting values'"))
         .arg(Arg::from_usage("-e --env 'setting env mode'"))
         .group(ArgGroup::with_name("settings")
             .args(&["setting", "value", "env"])
-            .required(true));
+            .required(true))
+        .arg(Arg::from_usage("-t --template [TEMPLATE] 'template file'"))
+        .arg(Arg::with_name("template file").value_name("TEMPLATE").help("template file'"))
+        .arg(Arg::from_usage("-o --output [OUTPUT] 'output file'"));
 
     let matches = app.get_matches();
 
@@ -71,11 +72,13 @@ fn setting(matches: &ArgMatches) -> Result<Value, Box<dyn Error>> {
 }
 
 fn template(matches: &ArgMatches) -> Result<String, Box<dyn Error>> {
-    // TODO Consider whether standard input is required
-    return match matches.value_of("template") {
-        Some(file) => input::read_from_file(file),
-        None => input::read_from_stdin()
-    };
+    if let Some(file) = matches.value_of("template") {
+        return input::read_from_file(file);
+    }
+    if let Some(file) = matches.value_of("template file") {
+        return input::read_from_file(file);
+    }
+    return input::read_from_stdin();
 }
 
 fn output(matches: &ArgMatches, content: String) {
