@@ -39,7 +39,7 @@ fn main() {
             .args(&["setting", "value", "env"])
             .required(true))
         .arg(Arg::from_usage("-t --template [TEMPLATE] 'template file'"))
-        .arg(Arg::with_name("template file").value_name("TEMPLATE").help("template file'"))
+        .arg(Arg::with_name("template2").value_name("TEMPLATE").help("template file'"))
         .arg(Arg::from_usage("-o --output [OUTPUT] 'output file'"));
 
     let matches = app.get_matches();
@@ -75,7 +75,7 @@ fn template(matches: &ArgMatches) -> Result<String, Box<dyn Error>> {
     if let Some(file) = matches.value_of("template") {
         return input::read_from_file(file);
     }
-    if let Some(file) = matches.value_of("template file") {
+    if let Some(file) = matches.value_of("template2") {
         return input::read_from_file(file);
     }
     return input::read_from_stdin();
